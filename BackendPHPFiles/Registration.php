@@ -8,6 +8,7 @@ class Registration {
 
     public function getAll($level) {
         
+        // Check if user exists
         if($level == '1') {
             $query = "SELECT country_id as id, country_name as name FROM countries";
             $stmt = $this->conn->prepare($query);
@@ -41,8 +42,47 @@ class Registration {
             return $result;
         }
     }
-    public function getSubLevelAll($level,$id,$sub_level) {
+
+    public function getSubAll($level,$id) {
         
+        // Check if user exists
+        if($level == '1') {
+            $query = "SELECT county_id as id, county_name as name FROM counties WHERE country_id = ?";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(1,$id,PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        } else if ($level == '2') {
+            $query = "SELECT * FROM sub_counties WHERE county_id = ?";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(1,$id,PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        } else if($level == '3')
+        {
+            $query = "SELECT * FROM wards WHERE sub_county_id = ?";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            $stmt->bindParam(1,$id,PDO::PARAM_INT);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }else
+        {
+            $query = "SELECT * FROM locations WHERE ward_id = ?";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(1,$id,PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }
+    }
+
+
+        public function getSubLevelAll($level,$id,$sub_level) {
+        
+        // Check if user exists
         if($level == '1') {
 
             if($sub_level == '2') {//get all counties
@@ -181,8 +221,15 @@ class Registration {
                 $stmt->execute();
                 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 return $result;
-            }else if($sub_level == '4') {//get all sub_counties
+            }else if($sub_level == '3') {//get all sub_counties
                 $query = "SELECT sub_county_id as id, sub_county_name as name FROM sub_counties WHERE sub_county_id IN ( SELECT sub_county_id FROM wards WHERE ward_id IN (SELECT ward_id FROM locations WHERE location_id = ? ))";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bindParam(1,$id,PDO::PARAM_INT);
+                $stmt->execute();
+                $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                return $result;
+            }else if($sub_level == '4') {//get all wards
+                $query = "SELECT ward_id as id, ward_name as name FROM wards WHERE ward_id IN (SELECT ward_id FROM locations WHERE location_id = ? )";
                 $stmt = $this->conn->prepare($query);
                 $stmt->bindParam(1,$id,PDO::PARAM_INT);
                 $stmt->execute();

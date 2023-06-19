@@ -73,19 +73,19 @@ import BackendService from '../services/Backend';
           formData.append('sub_level_to_view', this.whichLevel1);
 
           
-          if(!this.whichLevel1.includes(this.whichLevel)) {
+          //if(!this.whichLevel1.includes(this.whichLevel)) {
             BackendService.getLevelsSub(formData).then((response) => {
-              
-              this.options2 = response.data.payload
-          })
-        } else {
-          //this.options2 = ['name' = this.whichLevel];
-          var rightOne = this.options.filter((option)=> {
-            return option.id == this.nameSpecified ? option : null
-          });
-          console.log(rightOne[0].name);
-          document.getElementById('repeat').innerHTML = rightOne[0].name
-        }
+              if(response.data.message == 'true')
+                this.options2 = response.data.payload
+              else {
+                var rightOne = this.options.filter((option)=> {
+                  return option.id == this.nameSpecified ? option : null
+                });
+                //console.log(rightOne[0].name);
+                document.getElementById('repeat').innerHTML = rightOne[0].name
+                    }
+                })
+        //}
       },
     },
 
