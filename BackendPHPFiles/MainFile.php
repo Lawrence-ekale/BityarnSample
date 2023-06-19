@@ -40,7 +40,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['level'])){
         $levelSend = 1;
     } else if($level == 'County') {
         $levelSend = 2;
-    } else if($level == 'Sub_County') {
+    } else if($level == 'Sub-County') {
         $levelSend = 3;
     } else if($level == 'Ward') {
         $levelSend = 4;
@@ -67,6 +67,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['level'])){
             'message' => 'true',
             'payload' => $response
         );
+        //echo "Level ->".$levelSend." sub-level->".$sub_levelSend." then ID->".$id;
     }
     header('Content-Type: application/json');
     echo json_encode($response);

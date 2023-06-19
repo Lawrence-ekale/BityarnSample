@@ -28,18 +28,13 @@
     </optgroup>
   </select>
 
-  <!--<select>
-    <optgroup id="sublevel1" v-if="options2.length > 0">
-      <option v-for="option in options2" :key="option.id" :value="option.id">
-      {{ option.name }}
-    </option>
-    </optgroup>
-  </select>-->
-
   <p v-if="options2.length > 0">
     <p v-for="option in options2" :key="option.id" :value="option.id">
       {{ option.name }}
     </p>
+  </p>
+  <p v-else id="repeat">
+
   </p>
 </template>
 
@@ -56,12 +51,7 @@ import BackendService from '../services/Backend';
         nameSpecified: '',
         whichLevel: '',
         whichLevel1: '',
-        location: '',
-        ward: '',
-        sub_county: '',
-        county: '',
         options: [],
-        options1: [],
         options2: []
         
       }
@@ -75,47 +65,27 @@ import BackendService from '../services/Backend';
             this.options = response.data.payload
         })
       },
-      getSubLevelData(id) {
-        console.log("This id" + id + " The name chosen is " + this.nameSpecified);
-        let formData = new FormData();
-          formData.append('id', this.nameSpecified);
-          formData.append('sub_level', this.whichLevel);
-          BackendService.getLevelsSub(formData).then((response) => {
-            this.options1 = response.data.payload
-        })
-      },
       getLevelDataJump(id) {
         console.log(" The name id chosen is " + this.nameSpecified + " ANd level -> "+this.whichLevel+ "To view ->" +this.whichLevel1);
         let formData = new FormData();
           formData.append('id', this.nameSpecified);
           formData.append('level1',this.whichLevel);
           formData.append('sub_level_to_view', this.whichLevel1);
-          BackendService.getLevelsSub(formData).then((response) => {
-            this.options2 = response.data.payload
-        })
-      },
-      getWard() {
-        this.location = '';
-        this.sub_county = '';
-        this.county = '';
-        document.getElementById('name').innerHTML = ''
-            document.getElementById('ward').innerHTML = ''
-            document.getElementById('county').innerHTML = ''
-            document.getElementById('sub_county').innerHTML = ''
-            document.getElementById('country').innerHTML = ''
-        let formData = new FormData();
-          formData.append('name', this.ward);
-          formData.append('ward', 0);
-          BackendService.getWard(formData).then((response) => {
-            console.log(response.data.payload);
-          if(response.data.status === 'success') {
-            document.getElementById('name').innerHTML = ''
-            document.getElementById('ward').innerHTML = response.data.payload[0].ward_name
-            document.getElementById('county').innerHTML = response.data.payload[0].sub_county_name
-            document.getElementById('sub_county').innerHTML = response.data.payload[0].county_name
-            document.getElementById('country').innerHTML = response.data.payload[0].country_name
-          }
-        })
+
+          
+          if(!this.whichLevel1.includes(this.whichLevel)) {
+            BackendService.getLevelsSub(formData).then((response) => {
+              
+              this.options2 = response.data.payload
+          })
+        } else {
+          //this.options2 = ['name' = this.whichLevel];
+          var rightOne = this.options.filter((option)=> {
+            return option.id == this.nameSpecified ? option : null
+          });
+          console.log(rightOne[0].name);
+          document.getElementById('repeat').innerHTML = rightOne[0].name
+        }
       },
     },
 
